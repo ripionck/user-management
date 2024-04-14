@@ -1,6 +1,8 @@
 package com.user.userManagement.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +17,7 @@ import com.user.userManagement.repository.UserRepository;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository repository;
+    private UUID id;
 
     public UserDetailsServiceImpl(UserRepository repository) {
         this.repository = repository;
@@ -37,10 +40,34 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Update user profile fields
-        user.setEmail(updatedUser.getEmail());
+        if (updatedUser.getEmail() != null) {
+            user.setEmail(updatedUser.getEmail());
+        }
         // Update other profile fields as needed
 
         repository.save(user);
+    }
+
+    // Method for partial update of user profile
+    public boolean patchUserProfile(UUID userId, Map<String, Object> updates) {
+        Optional<User> optionalUser = repository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            // Apply updates
+            updates.forEach((key, value) -> {
+                switch (key) {
+                    case "email":
+                        user.setEmail((String) value);
+                        break;
+                    // Handle other fields as needed
+                }
+            });
+
+            repository.save(user);
+            return true;
+        }
+        return false;
     }
 
     // Method for fetching user profile
@@ -65,4 +92,30 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         repository.save(user);
     }
+
+    public UUID getId() {
+        return this.id;
+    }
+
+    public boolean patchUser(UUID userId, Map<String, Object> updates) {
+        Optional<User> optionalUser = repository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            // Apply updates
+            updates.forEach((key, value) -> {
+                switch (key) {
+                    case "email":
+                        user.setEmail((String) value);
+                        break;
+                    // Handle other fields as needed
+                }
+            });
+
+            repository.save(user);
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -9,6 +9,7 @@ import com.user.userManagement.model.User;
 import com.user.userManagement.service.UserDetailsServiceImpl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -27,12 +28,18 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/profile")
-    public ResponseEntity<String> updateUserProfile(@RequestBody User updatedUser,
+    @PatchMapping("/profile/{userId}")
+    public ResponseEntity<String> patchUserProfile(@PathVariable UUID userId, @RequestBody Map<String, Object> updates,
             @AuthenticationPrincipal UserDetails userDetails) {
-        String username = userDetails.getUsername();
-        userService.updateUserProfile(username, updatedUser);
-        return ResponseEntity.ok("User profile updated successfully");
+        // Check if the current user is updating their own profile
+        if (userId.equals(((UserDetailsServiceImpl) userDetails).getId())) {
+            if (userService.patchUserProfile(userId, updates)) {
+                return ResponseEntity.ok("User profile updated successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only update your own profile");
     }
 
     // Admin endpoints
@@ -47,13 +54,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only admins can register users");
     }
 
-    @PutMapping("/admin/users/{userId}")
-    public ResponseEntity<String> editUser(@PathVariable UUID userId, @RequestBody User updatedUser,
+    @PatchMapping("/admin/users/{userId}")
+    public ResponseEntity<String> patchUser(@PathVariable UUID userId, @RequestBody Map<String, Object> updates,
             @AuthenticationPrincipal UserDetails userDetails) {
         // Check if the current user has admin authority
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
-            userService.editUser(userId, updatedUser);
-            return ResponseEntity.ok("User updated successfully");
+            if (userService.patchUser(userId, updates)) {
+                return ResponseEntity.ok("User updated successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only admins can edit users");
     }
