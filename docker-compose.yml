@@ -16,3 +16,19 @@
 
 # volumes:
 #   postgres_data: {}
+
+version: '3.8'
+
+services:
+  server:
+    image: user_management #Application image name
+    container_name: app_test
+    build:
+      context: .
+      dockerfile: Dockerfile #If there is no image, run the build command to create the image
+    environment:
+      spring_datasource_url: jdbc:postgresql://178.128.125.153:5411/team_3 #env connection database
+      spring_datasource_username: tas-dev
+      spring_datasource_password: tas-dev.2024
+    ports:
+      - '8081:8080'
