@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -88,7 +91,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     // Method for Admin to view all available users
-    public List<User> getAllUsers() {
-        return repository.findAll();
+    public List<User> getAllUsers(int limit, int offset) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        Page<User> userPage = repository.findAll(pageable);
+        return userPage.getContent();
     }
+
 }

@@ -34,10 +34,13 @@ public class UserController {
     }
 
     @GetMapping("/admin/users")
-    public ResponseEntity<List<User>> getAllUsers(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<User>> getAllUsers(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
         // Check if the current user has admin authority
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
-            List<User> users = userService.getAllUsers();
+            List<User> users = userService.getAllUsers(page, size);
             return ResponseEntity.ok(users);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);

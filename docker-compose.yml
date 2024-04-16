@@ -1,18 +1,18 @@
-version: '3.8'
+# version: '3.8'
 
-services:
-  postgres:
-    container_name: user-dev
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data # Persistent storage for data
-    ports:
-      - '5442:5432' # Corrected port mapping
-    restart: unless-stopped
+# services:
+#   postgres:
+#     container_name: user-dev
+#     image: postgres:latest
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: password
+#       POSTGRES_DB: postgres
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data # Persistent storage for data
+#     ports:
+#       - '5442:5432' # Corrected port mapping
+#     restart: unless-stopped
 
-volumes:
-  postgres_data: {}
+# volumes:
+#   postgres_data: {}
