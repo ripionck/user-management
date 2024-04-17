@@ -1,5 +1,7 @@
 package com.user.userManagement.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.user.userManagement.filter.JwtAuthenticationFilter;
 import com.user.userManagement.service.UserDetailsServiceImpl;
@@ -33,9 +38,21 @@ public class SecurityConfig {
         }
 
         @Bean
+        CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
+                configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
+
+        @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-                return http.csrf(AbstractHttpConfigurer::disable)
+                return http.cors(c -> c.configurationSource(corsConfigurationSource()))
+                                .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(
                                                 req -> req.requestMatchers("/register/**", "/login/**")
                                                                 .permitAll()
