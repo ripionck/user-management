@@ -37,10 +37,10 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "50") int size) {
+            @RequestParam(defaultValue = "50") int limit) {
         // Check if the current user has admin authority
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
-            List<User> users = userService.getAllUsers(page, size);
+            List<User> users = userService.getAllUsers(page, limit);
             return ResponseEntity.ok(users);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);

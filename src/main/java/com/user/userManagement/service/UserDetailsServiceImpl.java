@@ -91,8 +91,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     // Method for Admin to view all available users
-    public List<User> getAllUsers(int limit, int offset) {
-        Pageable pageable = PageRequest.of(offset, limit);
+    public List<User> getAllUsers(int page, int limit) {
+        Pageable pageable = PageRequest.of(page, limit);
         Page<User> userPage = repository.findAll(pageable);
         return userPage.getContent();
     }
