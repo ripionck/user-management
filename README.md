@@ -4,6 +4,3 @@
 - Spring Boot JPA
 - Spring Boot Security
 - PostgreSQL 
-- JJWT API
-- JJWT Impl
-- JJWT Jackson
